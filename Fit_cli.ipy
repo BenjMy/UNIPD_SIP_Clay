@@ -1,0 +1,55 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Wed Jan  5 09:45:59 2022
+
+@author: ben
+"""
+import lib_cc_fit.cc_fit as cc_fit
+import os
+import lib_cc_fit.cc_fit as cls_cc_fit
+# !cc_fit.py --h
+# test -d results && rm -r results
+# !cls_cc_fit -f frequencies.dat -d data.dat -c 1 --plot
+
+os.chdir('./CCfit/examples/1-term/01/')
+
+cc_fit_lab = cc_fit.cc_fit()
+cc_fit_lab.load_data('data.dat',ignore= [])
+cc_fit_lab.data
+
+cc_fit_lab.load_frequencies('frequencies.dat',ignore= [])
+cc_fit_lab.fin
+cc_fit_lab.set_nr_cc_terms(nr=1)
+
+cc_fit_lab.set_initial_values(2)
+
+cc_fit_lab.fit_all_spectra()
+cc_fit_lab.plot_all_spectra('./', prefix='')
+
+# cc_fit.load_frequencies(options.frequency_file, options.ignore)
+# cc_fit.set_nr_cc_terms(options.nr_cc_terms)
+
+# if options.starting_model_file is not None:
+#     init_pars = np.atleast_2d(np.loadtxt(options.starting_model_file))
+#     cc_fit.cc_pars_init = init_pars
+# else:
+#     cc_fit.set_initial_values(options.starting_model)
+
+# cc_fit.fit_all_spectra()
+
+# # output
+# pwdx = os.getcwd()
+# if not os.path.isdir(options.output):
+#     os.makedirs(options.output)
+# os.chdir(options.output)
+
+# if options.plot_spectra:
+#     cc_fit.plot_all_spectra('./', prefix='')
+
+# if options.save_mean:
+#     cc_fit.save_mean_of_cc_pars('cc_fits_mean.dat')
+# else:
+#     cc_fit.save_non_essential_results('./')
+#     cc_fit.save_cc_pars('cc_fits.dat')
+#     cc_fit.save_cc_errors('cc_fits.dat.err')

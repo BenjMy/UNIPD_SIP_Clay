@@ -5,15 +5,11 @@ Created on Wed Jan  5 09:45:59 2022
 
 @author: ben
 """
-import pandas as pd
 import matplotlib.pyplot as plt
-from matplotlib import cm
 import matplotlib as mpl
 
 import lib_cc_fit.cc_fit as cc_fit
 import numpy as np
-import os
-import sys 
 
 from utils import (load_excel, 
                    filter_data, 
@@ -33,7 +29,6 @@ ini_val = 1
     
 
 
-import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 import matplotlib.cm
 import matplotlib.colors

@@ -7,7 +7,7 @@ Created on Wed Jan  5 09:45:59 2022
 """
 import pandas as pd
 import matplotlib.pyplot as plt
-import lib_cc_fit.cc_fit as cc_fit
+from CC_fit_src_MW.lib.lib_cc_fit import cc_fit as cc_fit
 import numpy as np
 import os
 import sys 
