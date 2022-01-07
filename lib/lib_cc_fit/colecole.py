@@ -99,7 +99,7 @@ def cole_log(inputdata, params):
     c = params[3:len(params):3]; # cementation exponent
 
     # extract frequencies
-    f = inputdata[0:(len(inputdata) / 2)];
+    f = inputdata[0:int((len(inputdata) / 2))];
     # prepare temporary array which will store the values of all CC-terms,
     # which later will be summed up
     term = np.zeros((len(f), nr_cc_terms), dtype=np.complex128)

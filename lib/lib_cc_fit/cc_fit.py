@@ -20,11 +20,12 @@ Cole-Cole fit related functions
 import numpy as np
 import os
 import matplotlib as mpl
-mpl.use('Agg')
+# mpl.use('Agg')1
 import matplotlib.pyplot as plt
 plt.ioff()
 from scipy.optimize import leastsq
-import lib_cc_fit.colecole as colecole
+import CC_fit_src_MW.lib.lib_cc_fit.colecole as colecole
+from CC_fit_src_MW.lib.lib_cc_fit import cc_fit as cc_fit
 
 
 class cc_fit:
@@ -64,8 +65,11 @@ class cc_fit:
         """
         Load magnitude and phase spectra from file.
         """
-        tmp_data = self.__load_file(filename)
-
+        if type(filename) == str:
+            tmp_data = self.__load_file(filename)
+        else:
+            tmp_data = filename
+            
         # if we have only one spectrum to fit, correct the shape of the array
         datashape = tmp_data.shape
         if(len(datashape) == 1):
@@ -80,7 +84,7 @@ class cc_fit:
         # magnitude and phase
         if(ignore != []):
             ignore_mag_ids = np.array(ignore, dtype=int)
-            ignore_pha_ids = ignore_mag_ids + tmp_data.shape[1] / 2 - len(
+            ignore_pha_ids = ignore_mag_ids + int(tmp_data.shape[1] / 2) - len(
                 ignore)
 
             # delete mags
@@ -106,8 +110,22 @@ class cc_fit:
         self.frequencies = self.__load_file(filename)
         if(ignore is not None):
             ignore_ids = np.array(ignore, dtype=int)
+            print(ignore_ids)
             self.frequencies = np.delete(self.frequencies, ignore_ids)
         self.fin = np.hstack((self.frequencies, self.frequencies))
+
+    def load_frequencies_array(self, array, ignore):
+        """
+        Load frequencies from file.
+        """
+        self.frequencies = array
+        if(ignore is not None):
+            ignore_ids = np.array(ignore, dtype=int)
+            self.frequencies = np.delete(self.frequencies, ignore_ids)
+        self.fin = np.hstack((self.frequencies, self.frequencies))
+
+
+
 
     def __load_file(self, filename):
         """
@@ -261,11 +279,11 @@ class cc_fit:
         Return the fit results, the magnitude and phase RMS, and the forward
         response of the fit parameters.
         """
-        nr_to_fit = len(spectrum) / 2
+        nr_to_fit = int(len(spectrum) / 2)
 
         y_meas = np.hstack(
             (spectrum[0:nr_to_fit],
-             spectrum[int(len(spectrum) / 2):len(spectrum) / 2 + nr_to_fit]))
+             spectrum[int(len(spectrum) / 2):int(len(spectrum) / 2 + nr_to_fit)]))
         x = np.hstack((self.fin[0:nr_to_fit],
                        self.fin[int(len(self.fin) / 2):int(len(self.fin) /
                                 2) + nr_to_fit]))
@@ -589,8 +607,7 @@ class cc_fit:
         ax = axes[0]
         ax.semilogx(f_e,
                     (np.exp(forward_init[0, :])),
-                    'b-',
-                    linestyle='dashed',
+                    'b',
                     label='initial parameters')
         ax.semilogx(f_e,
                     (np.exp(forward[0, :])),
@@ -616,14 +633,14 @@ class cc_fit:
 
         ax.semilogx(f_e,
                     -forward_init[1, :],
-                    'b-', linestyle='dashed',
+                    'b', linestyle='dashed',
                     label='initial model')
         # plot single terms
         colors = ('k', 'gray')
         for nr, term in enumerate(forward_cc_terms):
             ax.semilogx(f_e,
                         -term[1, :],
-                        '-', color=colors[nr % 2],
+                        color=colors[nr % 2],
                         linestyle='dashed',
                         label='term {0}'.format(nr + 1)
                         )
@@ -647,10 +664,12 @@ class cc_fit:
 
         for ax in axes:
             ax.yaxis.set_major_locator(mpl.ticker.MaxNLocator(5))
-        fig.tight_layout()
+        # fig.tight_layout()
         fig.subplots_adjust(top=0.8)
         fig.savefig('{0}.png'.format(filename))
+        plt.show()
         plt.close(fig)
+        
 
     def check_and_correct_cc_parameter_set(p0):
         """
