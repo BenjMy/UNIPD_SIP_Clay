@@ -24,8 +24,8 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 plt.ioff()
 from scipy.optimize import leastsq
-import CC_fit_src_MW.lib.lib_cc_fit.colecole as colecole
-from CC_fit_src_MW.lib.lib_cc_fit import cc_fit as cc_fit
+import lib_cc_fit.colecole as colecole
+from lib_cc_fit import cc_fit
 
 
 class cc_fit:

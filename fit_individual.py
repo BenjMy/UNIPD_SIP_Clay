@@ -5,8 +5,7 @@ Created on Wed Jan  5 09:45:59 2022
 
 @author: ben
 """
-from CC_fit_src_MW.lib.lib_cc_fit import cc_fit as cc_fit
-
+from lib_cc_fit import cc_fit as cc_fit
 from utils import load_excel, filter_data, plot_data_spectra
 
 # Dataset is:
