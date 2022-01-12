@@ -24,6 +24,6 @@ if __name__ == '__main__':
           package_dir={'': 'lib'},
           packages=['lib_cc_fit', ],
           scripts=['src/cc_fit.py', ],
-          install_requires=['numpy', 'scipy', 'matplotlib'],
+          install_requires=['numpy', 'scipy', 'matplotlib','pandas', 'seaborn', 'openpyxl'],
           use_2to3=False,
           )

@@ -10,17 +10,18 @@ import matplotlib as mpl
 
 import lib_cc_fit.cc_fit as cc_fit
 import numpy as np
+from lib_cc_fit import utils
 
-from utils import (load_excel, 
-                   filter_data, 
-                   plot_data_spectra,
-                   map_color)
+# from utils import (load_excel, 
+#                    filter_data, 
+#                    plot_data_spectra,
+#                    map_color)
 
 # Dataset is:
 # 59 frequencies, 21 saturation rate
 
 
-clay_cont = [6] #[2,4,6,8] # clay content ?
+clay_cont = [2] #[2,4,6,8] # clay content ?
 sat_idx = [] # 3 # saturation
 max_freq = 1e3
 min_freq = 1e-3
@@ -43,11 +44,13 @@ matplotlib.cm.register_cmap("mycolormap",cmap)
 #https://stackoverflow.com/questions/43805821/matplotlib-add-colorbar-to-non-mappable-object
 
 
-fig, axs = plt.subplots(2, 1, figsize=(7, 6))
+
 
 for cc in enumerate(clay_cont): # Loop over sc
 
-    data = load_excel(cc[1],min_freq=min_freq,max_freq=max_freq)    
+    fig, axs = plt.subplots(2, 1, figsize=(7, 6), dpi=300)
+
+    data = utils.load_excel(cc[1],min_freq=min_freq,max_freq=max_freq)    
     if len(sat_idx)>0:
         sat = sat_idx
     else:
@@ -60,9 +63,7 @@ for cc in enumerate(clay_cont): # Loop over sc
         
         lab_SIP = cc_fit.cc_fit()
         lab_SIP.load_data(data['data_asc'][:,ss[0]],ignore=data['ign_freq'])  # you can ignore frequencies here
-        id_2_rmv = filter_data(data['data_asc'][:,ss[0]],data['freq'])
-        
-        # data['data_asc'][:,ss[0]]
+        id_2_rmv = utils.filter_data(data['data_asc'][:,ss[0]],data['freq'])
         
         if len(id_2_rmv)>1:
             pass
@@ -77,7 +78,7 @@ for cc in enumerate(clay_cont): # Loop over sc
             lab_SIP.fit_all_spectra()
             # lab_SIP.plot_all_spectra(path+'./', prefix=str(ss[1]), ax=ax)
 
-            plt = plot_data_spectra(lab_SIP.data, lab_SIP.frequencies, path+'./', 
+            plt = utils.plot_data_spectra(lab_SIP.data, lab_SIP.frequencies, path+'./', 
                               prefix=str(ss[1]), 
                               axes=[axs,fig], 
                               c=cpal[len(sat)-ss[0]],

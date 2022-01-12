@@ -17,13 +17,15 @@ import matplotlib.cm
 import matplotlib.colors
 import seaborn as sns
 
-def map_color():
+from lib_cc_fit import cc_fit as cc_fit
+
+def map_color(n_colors, desat=1):
     
     clist = [(0, 'powderblue'), (1, 'darkblue')]
     colors = mcolors.LinearSegmentedColormap.from_list("", clist)
     cmap = matplotlib.colors.LinearSegmentedColormap.from_list("", clist)
-    matplotlib.cm.register_cmap("mycolormap", cmap)
-    cpal = sns.color_palette("mycolormap", n_colors=21, desat=1)
+    # matplotlib.cm.register_cmap("mycolormap", cmap)
+    cpal = sns.color_palette("mycolormap", n_colors=n_colors, desat=1)
     
     return cpal
     
@@ -159,12 +161,151 @@ def load_excel(sheet_nb,**kwargs):
     
     return dict_data_excel
 
+def crawl_excel(clay_cont= [2,4,6,8], 
+                sat_idx=[], 
+                nr=1, 
+                ini_val=1, 
+                **kwargs):
+
+    pathfig = './figs/'
+    
+    if not os.path.exists(pathfig):
+        os.makedirs(pathfig)
+        
+    
+    max_freq = 1e4
+    min_freq = 1e-4
+    
+    plot_raw = False
+    if 'plot_raw' in kwargs:
+        plot_raw = kwargs['plot_raw']
+        
+    if 'max_freq' in kwargs:
+        max_freq = kwargs['max_freq']
+    if 'min_freq' in kwargs:
+        min_freq = kwargs['min_freq']
+        
+    CC_mat = [] # store ColeCole parameters per saturation per clay content
+
+    for cc in enumerate(clay_cont): # Loop over sc
+    
+        if plot_raw == True:
+            fig, axs = plt.subplots(2, 1, figsize=(7, 6))
+
+        data = load_excel(cc[1],
+                                min_freq=min_freq,
+                                max_freq=max_freq)
+        cc_pars_ss = []
+        
+        if len(sat_idx)>0:
+            sat = sat_idx
+        else:
+            sat = data['sat']
+    
+            
+        for ss in enumerate(sat): # Loop over saturation
+           
+            path = './'
+            lab_SIP = cc_fit.cc_fit()
+            lab_SIP.load_data(data['data_asc'][:,ss[0]],ignore=data['ign_freq'])  # you can ignore frequencies here
+            id_2_rmv = filter_data(data['data_asc'][:,ss[0]],data['freq'])
+            
+            if len(id_2_rmv)>1:
+                cc_pars_ss.append([np.nan,np.nan,np.nan,np.nan,ss[1],cc[1]])
+                pass
+            
+            else:
+                lab_SIP.data     
+                lab_SIP.load_frequencies_array(data['freq_asc'].to_numpy(),ignore= data['ign_freq'])  # you can ignore frequencies here
+                lab_SIP.set_nr_cc_terms(nr=nr)
+                lab_SIP.set_initial_values(ini_val)
+                lab_SIP.fit_all_spectra()
+                cc_pars_ss.append(np.r_[lab_SIP.cc_pars[0],ss[1],cc[1]])
+        
+
+                if 'plot_raw' == True:
+                
+                    cpal = map_color(n_colors=len(sat)+1, desat=1)
+                    # cpal = sns.color_palette("mycolormap", n_colors=len(sat)+1, desat=1)
+                    plot_data_spectra(lab_SIP.data, lab_SIP.frequencies, path+'./', 
+                                      prefix=str(ss[1]), 
+                                      axes=[axs,fig], 
+                                      c=cpal[len(sat)-ss[0]],
+                                      label=str(ss))
+                    plt.savefig(pathfig + 'raw_data_clay' + str(cc[1]),dpi=300)
+                    plt.title('Data clay' + str(cc[1]))
+                
+                else:
+                    lab_SIP.plot_all_spectra(pathfig, prefix=str(ss[1]))
+
+                
+            
+        cc_pars_ss = np.vstack(cc_pars_ss)
+        CC_mat.append(cc_pars_ss)
+        
+    CC_sat_param_clay = np.vstack(CC_mat)
+    
+    return CC_sat_param_clay
+
+
+
+def plot_CC_matrice(data_mat, savename='CC_matrice.png'):
+
+    pathfig = './figs/'
+    
+    if not os.path.exists(pathfig):
+        os.makedirs(pathfig)
+        
+    CC_df = pd.DataFrame(data_mat)
+    CC_df.rename(columns={0:'C0',1:'C1',2:'C2',3:'C3',4:'saturation',5:'clay'},inplace=True)
+    CC_df.reset_index()
+    
+    # colors = {0:'red', 1:'green', 2:'blue', 3:'yellow',4:'yellow',5:'black'}
+    # !pip install seaborn
+    # https://kanoki.org/2020/08/30/matplotlib-scatter-plot-color-by-category-in-python/
+    # https://seaborn.pydata.org/tutorial/regression.html
+    
+    fig, axs = plt.subplots(2,2,sharex='all', figsize=(10,4), dpi=300)
+    
+    # sns.lmplot('saturation', 'C0', data=test, hue='ClayContent', fit_reg=False, ax=axs[0])
+    map1 = axs[0,0].scatter(CC_df['saturation'], CC_df['C0'], c=CC_df['clay']
+                     ,label=[''],cmap='viridis')
+    axs[0,0].set_xlabel('saturation')
+    
+    axs[1,0].scatter(CC_df['saturation'], CC_df['C1'], c=CC_df['clay'])
+    axs[0,1].scatter(CC_df['saturation'], CC_df['C2'], c=CC_df['clay'])
+    axs[1,1].scatter(CC_df['saturation'], CC_df['C3'], 
+                      c=CC_df['clay'])
+    axs[0,0].set_ylabel(r'$\rho_{0}$')
+    axs[1,0].set_ylabel('m')
+    axs[0,1].set_ylabel(r'$\tau$')
+    axs[1,1].set_ylabel('c')
+    axs[1,0].set_xlabel('saturation')
+    axs[0,1].set_xlabel('saturation')
+    axs[1,1].set_xlabel('saturation')
+    # fig.colorbar(map1, ax=axs[0,0])
+    
+    fig.subplots_adjust(right=0.8)
+    cbar_ax = fig.add_axes([0.85, 0.15, 0.05, 0.7])
+    cb = fig.colorbar(map1, cax=cbar_ax)
+    cb.set_label('Clay content')    
+    plt.savefig(pathfig + savename, dpi=300)
+    
+    pass
+
+
 
 def plot_data_spectra(data, frequencies, directory=None, prefix=None, 
                       axes=[], 
                       c=[], 
                       label=[]):
     
+    pathfig = './figs/'
+    
+    if not os.path.exists(pathfig):
+        os.makedirs(pathfig)
+        
+        
     if len(axes)>0:
         axs = axes[0]
         fig = axes[1]
