@@ -81,19 +81,26 @@ def load_excel(sheet_nb,**kwargs):
         
     # Load data from excel file
     # ------------------------------------------------------------------------
-    phase = pd.read_excel('III-IV_sc_2_4_6_8_calc_modifiedBM.xlsx',
-                          sheet_name=str(sheet_nb) + '_phase',
-                          index_col=None, header=4)  
+    # 'III-IV_sc_2_4_6_8_calc_cleaned.xlsx'    
+    # 'III-IV_sc_2_4_6_8_calc_modifiedBM.xlsx'
     
+    filename = 'III-IV_sc_2_4_6_8_calc_cleaned.xlsx'
+    # filename = 'III-IV_sc_2_4_6_8_calc_modifiedBM.xlsx'
+    phase = pd.read_excel(filename,
+                          sheet_name=str(sheet_nb) + '_phase',
+                          index_col=None, header=4,
+                          na_values='NA',
+                          nrows= 118)  
     
     phase.rename(columns={"theta": "freq"},inplace=True)
     data_phase = phase.to_numpy()
     data_phase = data_phase[:,1:]
-    
+
+
     # df_t = phase.T.reset_index()
     # theta = df_t['index'][1:]
     
-    sat_df = pd.read_excel('III-IV_sc_2_4_6_8_calc_modifiedBM.xlsx',
+    sat_df = pd.read_excel(filename,
                           sheet_name=str(sheet_nb) + '_resistivity',
                           index_col=0, header=2,
                           #converters={'saturation':np.float64}
@@ -105,12 +112,18 @@ def load_excel(sheet_nb,**kwargs):
     sat = sat[~np.isnan(sat)]
 
 
-    magnitude = pd.read_excel('III-IV_sc_2_4_6_8_calc_modifiedBM.xlsx',
+    magnitude = pd.read_excel(filename,
                               sheet_name=str(sheet_nb) + '_resistivity',
-                              index_col=None, header=4)  
+                              index_col=None, header=4,
+                              na_values='NA',
+                              nrows= 118)  
     data_mag = magnitude.to_numpy()
     data_mag = data_mag[:,1:]
     data_mag.shape
+    
+    print(data_mag)
+    np.log(data_mag)
+    
     
     # Infer saturation
     # ------------------------------------------------------------------------

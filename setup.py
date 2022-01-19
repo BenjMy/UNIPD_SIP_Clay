@@ -1,29 +1,19 @@
-#!/usr/bin/env python
-from setuptools import setup
-# from setuptools import find_packages
-# find_packages
+import setuptools
 
-# under windows, run
-# python.exe setup.py bdist --format msi
-# to create a windows installer
+with open("Readme.md", "r") as f:
+    long_description = f.read()
 
 version_short = '0.1'
 version_long = '0.1.0'
 
 if __name__ == '__main__':
-    setup(name='cc_fit',
+    setup(name='ccfitB',
           version=version_long,
           description='Cole-Cole fit routines',
-          author='Maximilian Weigand',
+          author='B. Mary',
           license='GPL-3',
-          author_email='mweigand@geo.uni-bonn.de',
-          url='http://www.geo.uni-bonn.de/~mweigand',
-          # find_packages() somehow does not work under Win7 when creating a
-          # msi # installer
-          # packages=find_packages(),
-          package_dir={'': 'lib'},
-          packages=['lib_cc_fit', ],
+          author_email='benjamin.mary@unipd.it',
+          packages=setuptools.find_packages(),
           scripts=['src/cc_fit.py', ],
           install_requires=['numpy', 'scipy', 'matplotlib','pandas', 'seaborn', 'openpyxl'],
-          use_2to3=False,
           )

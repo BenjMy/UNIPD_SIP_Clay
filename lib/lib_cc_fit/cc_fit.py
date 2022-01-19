@@ -98,6 +98,9 @@ class cc_fit:
         # we got linear data, we want log_e
         # todo: implement check
 
+        # print(np.log(tmp_data[:, 0:int(tmp_data.shape[1] / 2)]))
+        print(tmp_data[:, 0:int(tmp_data.shape[1] / 2)])
+        
         tmp_data[:, 0:int(tmp_data.shape[1] / 2)] = np.log(
             tmp_data[:, 0:int(tmp_data.shape[1] / 2)])
 
