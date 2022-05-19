@@ -49,7 +49,7 @@ savename = 'CC_matrice'+varying_parm_name
 #     utils.plot_CC_matrice(data_mat,varying_parm_name, savename + ext)
 
 for ext in ['.png','.eps','.svg']:
-    utils.plot_CC_matrice(data_mat,varying_parm_name, savename + 'ylim' + ext, 
+    utils.plot_CC_matrice(data_mat,varying_parm_name, savename + 'n_peaks' + str(nr) + ext, 
                           minmax_y_tau=[-15,5],
                           minmax_y_m=[0,0.5],
                           minmax_y_c=[0.1,0.45],
@@ -76,7 +76,7 @@ savename = 'CC_matrice'+varying_parm_name
 for ext in ['.png','.eps','.svg']:
     # utils.plot_CC_matrice(data_mat,varying_parm_name, savename + ext)
 
-    utils.plot_CC_matrice(data_mat,varying_parm_name, savename + 'ylim' + ext, 
+    utils.plot_CC_matrice(data_mat,varying_parm_name, savename + 'n_peaks' + str(nr) + ext, 
                           minmax_y_tau=[-15,5],
                           minmax_y_m=[0,0.5],
                           minmax_y_c=[0.1,0.45],
