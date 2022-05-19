@@ -21,7 +21,7 @@ from lib_cc_fit import utils
 # 59 frequencies, 21 saturation rate
 
 
-clay_cont = [4] #[2,4,6,8] # clay content ?
+clay_cont = [2,4,6,8] # clay content ?
 sat_idx = [] # 3 # saturation
 max_freq = 1e3
 min_freq = 1e-3
