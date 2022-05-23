@@ -11,8 +11,8 @@ from lib_cc_fit import utils
 #%%
 # Dataset is:
 # 59 frequencies
-files = [ 'III-IV_sc_2_4_6_8_calc_cleaned2.xlsx',
-         'V_scs2_2_4_6_8_calc_cleaned2.xlsx'
+files = [ 'rawData/III-IV_sc_2_4_6_8_calc_cleaned2.xlsx',
+         'rawData/V_scs2_2_4_6_8_calc_cleaned2.xlsx'
          ]
 # V_scs2_2_4_6_8_calc_cleaned2
 

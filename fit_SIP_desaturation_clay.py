@@ -12,7 +12,7 @@ sc_nb = [2,4,6,8] # varying parameters = excel tabs
 sat_idx = [] #np.arange(0,21) # 3 # saturation
 max_freq = 1e3 # minimum freq to fit
 min_freq = 1e-3 # maximum freq to fit
-nr = 1 # number of peaks?
+nr = 2 # number of peaks?
 ini_val = 1 # initial guess of CC params
 
 # Theta value not calculated for sc == 2!
@@ -23,8 +23,8 @@ ini_val = 1 # initial guess of CC params
 
 
 #%% excel files
-files = [ 'III-IV_sc_2_4_6_8_calc_cleaned2.xlsx',
-          'V_scs2_2_4_6_8_calc_cleaned2.xlsx'
+files = [ 'rawData/III-IV_sc_2_4_6_8_calc_cleaned2.xlsx',
+          'rawData/V_scs2_2_4_6_8_calc_cleaned2.xlsx'
          ]
 
 #%% varying clay content, fixed salinity
