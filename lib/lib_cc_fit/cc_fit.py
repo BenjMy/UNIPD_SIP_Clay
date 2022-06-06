@@ -365,7 +365,7 @@ class cc_fit:
 
         # return values
         fit_parameters = plsq
-
+        
         # TODO: Sort CC terms for descending Tau values
         #       sort fit_parameters, mag_rms, pha_rms, forward, errors
 

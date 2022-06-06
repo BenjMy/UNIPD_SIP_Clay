@@ -8,7 +8,7 @@ Created on Wed Jan  5 09:45:59 2022
 from lib_cc_fit import utils
 import pandas as pd
 
-sc_nb = [2,4,6,8] # varying parameters = excel tabs
+sc_nb = [2,4,6,8]  # varying parameters = excel tabs
 sat_idx = [] #np.arange(0,21) # 3 # saturation
 max_freq = 1e3 # minimum freq to fit
 min_freq = 1e-3 # maximum freq to fit
@@ -40,22 +40,30 @@ data_mat = utils.crawl_excel(varying_parm= sc_nb,
                               plot_raw = False,
                               varying_parm_name = varying_parm_name,
                               no_filter = True,
+                              savefig = False,
                             )
 # add error bars to points based on RMS
-
+# import numpy as np
+# np.shape(data_mat)
 savename = 'CC_matrice'+varying_parm_name
+#%%
 
 # for ext in ['.png','.eps','.svg']:
 #     utils.plot_CC_matrice(data_mat,varying_parm_name, savename + ext)
 
 for ext in ['.png','.eps','.svg']:
-    utils.plot_CC_matrice(data_mat,varying_parm_name, savename + 'n_peaks' + str(nr) + ext, 
+    CC_df = utils.plot_CC_matrice(data_mat,
+                          varying_parm_name, 
+                          savename + 'n_peaks' + str(nr) + ext, 
                           minmax_y_tau=[-15,5],
                           minmax_y_m=[0,0.5],
                           minmax_y_c=[0.1,0.45],
                           minmax_y_rho0=[3,6],
+                          samefig=False,
                           )
-    
+
+utils.export2csv(CC_df,savename + '.csv')
+
 
 #%% varying salinity content, fixed clay content
 
@@ -84,4 +92,5 @@ for ext in ['.png','.eps','.svg']:
                           )
     
     
-    
+utils.export2csv(CC_df,savename + '.csv')
+
