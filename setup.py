@@ -7,7 +7,7 @@ version_short = '0.1'
 version_long = '0.1.0'
 
 if __name__ == '__main__':
-    setup(name='ccfitB',
+    setuptools.setup(name='ccfitB',
           version=version_long,
           description='Cole-Cole fit routines',
           author='B. Mary',

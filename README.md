@@ -10,7 +10,8 @@ Processing relies on the [fork](https://github.com/m-weigand/Cole-Cole-fit)
 
 ## How to install
 
-conda env update --file environment.yml --prune
+
+conda env create -f environment.yml
 conda activate SIP_UNIPD
 python setup.py install
 
