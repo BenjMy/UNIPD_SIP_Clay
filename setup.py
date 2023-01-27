@@ -15,5 +15,4 @@ if __name__ == '__main__':
           author_email='benjamin.mary@unipd.it',
           packages=setuptools.find_packages(),
           scripts=['src/cc_fit.py', ],
-          install_requires=['numpy', 'scipy', 'matplotlib','pandas', 'seaborn', 'openpyxl'],
           )

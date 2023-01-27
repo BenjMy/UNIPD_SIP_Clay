@@ -1,0 +1,10 @@
+name: SIP_UNIPD
+channels:
+- conda-forge
+- default
+dependencies:
+- python==3.9
+- scipy
+- numpy
+- matplotlib
+- spyder

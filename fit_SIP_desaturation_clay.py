@@ -89,6 +89,7 @@ for ext in ['.png','.eps','.svg']:
                           minmax_y_m=[0,0.5],
                           minmax_y_c=[0.1,0.45],
                           minmax_y_rho0=[3,6],
+                          samefig=False,
                           )
     
     
