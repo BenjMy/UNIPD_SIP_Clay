@@ -29,7 +29,7 @@ mpl.style.use('default')
 mpl.rcParams['grid.color'] = 'k'
 mpl.rcParams['grid.linestyle'] = ':'
 mpl.rcParams['grid.linewidth'] = 0.25
-mpl.rcParams['font.family'] = 'Avenir'
+# mpl.rcParams['font.family'] = 'Avenir'
 plt.rcParams['font.size'] = 12
 plt.rcParams['axes.linewidth'] = 0.75
 
@@ -181,6 +181,7 @@ def crawl_excel(filename,
                 nr=1, 
                 ini_val=1, 
                 savefig=False,
+                fixC = True,
                 **kwargs):
 
     pathfig = './figs/'
@@ -255,7 +256,7 @@ def crawl_excel(filename,
                 lab_SIP.set_nr_cc_terms(nr=nr)
                 lab_SIP.set_initial_values(ini_val)
                 lab_SIP.cc_pars_init
-                lab_SIP.fit_all_spectra()
+                lab_SIP.fit_all_spectra(fixC)
                 cc_pars_ss.append(np.r_[lab_SIP.cc_pars[0],
                                         lab_SIP.magnitude_rms,lab_SIP.phase_rms,
                                         ss[1],

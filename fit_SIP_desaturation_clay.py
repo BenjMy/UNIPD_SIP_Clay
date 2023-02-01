@@ -12,8 +12,8 @@ sc_nb = [2,4,6,8]  # varying parameters = excel tabs
 sat_idx = [] #np.arange(0,21) # 3 # saturation
 max_freq = 1e3 # minimum freq to fit
 min_freq = 1e-3 # maximum freq to fit
-nr = 2 # number of peaks?
-ini_val = 1 # initial guess of CC params
+nr = 1 # number of peaks?
+ini_val = 2 # initial guess of CC params
 
 # Theta value not calculated for sc == 2!
 
@@ -34,13 +34,14 @@ data_mat = utils.crawl_excel(varying_parm= sc_nb,
                               filename=files[0],
                               sat_idx=[],
                               nr = nr,
-                              ini_val = 1,
+                              ini_val = ini_val,
                               max_freq = max_freq,
                               min_freq = min_freq,
                               plot_raw = False,
                               varying_parm_name = varying_parm_name,
                               no_filter = True,
                               savefig = False,
+                              fixC = True, # fix C term to 0.5 (Debye)
                             )
 # add error bars to points based on RMS
 # import numpy as np
@@ -51,13 +52,13 @@ savename = 'CC_matrice'+varying_parm_name
 # for ext in ['.png','.eps','.svg']:
 #     utils.plot_CC_matrice(data_mat,varying_parm_name, savename + ext)
 
-for ext in ['.png','.eps','.svg']:
+for ext in ['.png']:
     CC_df = utils.plot_CC_matrice(data_mat,
                           varying_parm_name, 
                           savename + 'n_peaks' + str(nr) + ext, 
                           minmax_y_tau=[-15,5],
                           minmax_y_m=[0,0.5],
-                          minmax_y_c=[0.1,0.45],
+                          minmax_y_c=[0.1,1],
                           minmax_y_rho0=[3,6],
                           samefig=False,
                           )
@@ -69,19 +70,20 @@ utils.export2csv(CC_df,savename + '.csv')
 
 varying_parm_name = '% of clay (b)'
 data_mat = utils.crawl_excel(varying_parm= sc_nb,
-                             filename=files[1],
-                             sat_idx=[],
-                             nr = nr,
-                             ini_val = 1,
-                             max_freq = max_freq,
-                             min_freq = min_freq,
-                             plot_raw = False,
-                             varying_parm_name = varying_parm_name,
-                             no_filter = True,
+                              filename=files[1],
+                              sat_idx=[],
+                              nr = nr,
+                              ini_val = 1,
+                              max_freq = max_freq,
+                              min_freq = min_freq,
+                              plot_raw = False,
+                              varying_parm_name = varying_parm_name,
+                              no_filter = True,
+                              fixC = True, # fix C term to 0.5 (Debye)
                             )
 
 savename = 'CC_matrice'+varying_parm_name
-for ext in ['.png','.eps','.svg']:
+for ext in ['.png']:
     # utils.plot_CC_matrice(data_mat,varying_parm_name, savename + ext)
 
     utils.plot_CC_matrice(data_mat,varying_parm_name, savename + 'n_peaks' + str(nr) + ext, 

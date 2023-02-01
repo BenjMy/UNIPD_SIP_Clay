@@ -67,6 +67,80 @@ def cole_complex(frequencies, params):
 
     return Zfit
 
+def cole_log_fixC(inputdata, params):
+
+    """
+    compute impedance values (amplitude and phase) from a given set of
+    Cole-Cole parameters at different frequencies.
+    ---
+    Parameters:
+    inputdata   - array containing the frequency values at which the impedance
+                  values will be computed twice: [frequencies ; frequencies].
+    params      - array containg the rho0 and an arbitrary number of (m,tau,c)
+    tuples of the parameters: ln(rho0), m, ln(tau), c. The natural logarithm is
+    used here! rho0 and tau are always positive (in a physical sense).  Thus
+    the length of this vector is L = 1 + 3 * N, where N is the number of
+    Cole-Cole terms.  m and c are both limited to the range [0,1]
+    ----
+    Returns:
+    fitdata     - array containing amplitude and phase values for the given
+                  frequencies. The first half of the vector contains the
+                  amplitudes (in natural logarithm), the second one the phases,
+                  in mRad
+    """
+     # determine number of Cole-Cole terms
+    nr_cc_terms = int((len(params) - 1) / 3)
+
+    # extract the Cole-Cole parameters
+    rho0 = np.exp(params[0]);  # DC resistance
+    m = params[1:len(params):3] # chargeability
+    tau = np.exp(params[2:len(params):3]); #time constant
+    # c = params[3:len(params):3]; # cementation exponent
+
+    # extract frequencies
+    f = inputdata[0:int((len(inputdata) / 2))];
+    # prepare temporary array which will store the values of all CC-terms,
+    # which later will be summed up
+    term = np.zeros((len(f), nr_cc_terms), dtype=np.complex128)
+
+    # compute Cole-Cole function, each term separately
+    for k in range(0, nr_cc_terms):
+        term[:,k] =  (m[k]) * ( 1 - 1 / (1 + ((0+1j) * 2 * np.pi * f * tau[k]) ** 0.5))
+
+    # sum up
+    term_g = np.sum(term, 1);
+
+    # multiply rho0
+    Zfit = rho0 * (1  - term_g);
+    # we return magnitude and phase values
+    rhoreal = np.real(Zfit);
+    rhoimag = np.imag(Zfit);
+    try:
+        rhofit = np.sqrt(rhoreal ** 2 + rhoimag ** 2);  # Amplitude
+    except FloatingPointError:
+        #Return NaN values for the whole spectrum!
+        rhofit = np.empty_like(rhoreal)
+        rhofit[:] = np.nan
+        # Developer : Uncomment the following lines to show more info data leading to the error
+        print('FloatingPointError')
+        print('rhofit', rhofit)
+        print('rhoreal', rhoreal)
+        print('rhoimag', rhoimag)
+        print(rho0, m, tau)
+        print(params)
+
+    # phases, [mrad]
+    phifit = 1000 * np.arctan(rhoimag/rhoreal); # Die Phase kann man aus Re und Im als Tan berechnen
+    # Magnitude, Phase
+    # returns a 2 x [number of frequencies] ndarray
+    # fitdata[0, :] are the magnitudes
+    # fitdata[1, :] the phase values
+
+    fitdata = np.vstack((np.log(rhofit), phifit));
+    return fitdata
+
+
+
 
 def cole_log(inputdata, params):
 

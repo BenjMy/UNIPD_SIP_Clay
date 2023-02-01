@@ -274,7 +274,7 @@ class cc_fit:
         pha_rms /= (len(spectrum) / 2)
         return pha_rms
 
-    def fit_spectrum(self, spectrum, p0):
+    def fit_spectrum(self, spectrum, p0, fixC=False):
         """
         Fit a spectrum, given the data, the frequencies, and the starting
         parameters.
@@ -292,10 +292,22 @@ class cc_fit:
                                 2) + nr_to_fit]))
 
         # the actual fitting routine
-        plsq, cov, info, mesg, success = leastsq(
-            self.__residuals, p0, args=(y_meas, x),
-            full_output=1,
-            maxfev=10000000)
+        
+        if fixC:
+            if self.nr_cc_terms>=6:
+                p0 = np.delete(p0,[3,6])
+            else:
+                p0 = np.delete(p0,[3])
+
+            plsq, cov, info, mesg, success = leastsq(
+                self.__residuals_fixC, p0, args=(y_meas, x),
+                full_output=1,
+                maxfev=10000000)
+        else:
+            plsq, cov, info, mesg, success = leastsq(
+                self.__residuals, p0, args=(y_meas, x),
+                full_output=1,
+                maxfev=10000000)
         # plsq,cov,info,mesg,success = leastsq(
         #   self.__residuals, p0, Dfun=self.__Dres,
         #   args=(y_meas, x), maxfev= 10000000, full_output=1)
@@ -371,7 +383,7 @@ class cc_fit:
 
         return fit_parameters, mag_rms, pha_rms, forward, errors
 
-    def fit_all_spectra(self):
+    def fit_all_spectra(self,fixC):
         # resize arrays
         self.magnitude_rms = np.zeros(self.data.shape[0])
         self.phase_rms = np.zeros(self.data.shape[0])
@@ -381,7 +393,22 @@ class cc_fit:
         for id in range(0, self.data.shape[0]):
             fit_results, mag_rms, pha_rms, forward_response, errors = \
                 self.fit_spectrum(
-                    self.data[id, :], self.cc_pars_init[id, :])
+                    self.data[id, :], self.cc_pars_init[id, :],
+                    fixC=fixC)
+            
+            # fit_results, mag_rms, pha_rms, forward_response, errors = \
+            #     self.fit_spectrum(
+            #         self.data[id, :], self.cc_pars_init[id, :],
+            #         fixC=False)
+                
+            if len(fit_results)<np.shape(self.cc_pars)[1]:
+                
+                if self.nr_cc_terms>=6:
+                    fit_results = np.insert(fit_results,[3],0.5)
+                    fit_results = np.append(fit_results, 0.5)
+                else:
+                    fit_results = np.insert(fit_results,[3],0.5)
+                    
             self.cc_pars[id, :] = fit_results
             self.errors[id, :] = errors
             self.magnitude_rms[id] = mag_rms
@@ -415,6 +442,46 @@ class cc_fit:
         ccJac = -colecole.cc_jac(x, p) * err
         return ccJac
 
+    def __residuals_fixC(self, p, y, x):
+        """
+        Compute residuals of the measured data y and the response of the
+        Cole-Cole function cole_log for the x(frequency) values and the
+        parameters p. Used for leastsq function.
+        """
+        
+        try:
+            erg = colecole.cole_log_fixC(x, p)
+        except Exception as e:
+            print('error', e)
+            return 10e10
+
+        erg1 = np.hstack((erg[0, :], erg[1, :]))
+        err = y - erg1
+
+        # NaN check and set err to 1e10
+        if(np.isnan(err).any()):
+            err *= 10e10
+        # m
+        if(p[1] < 0 or (len(p) > 4 and p[4] < 0)):
+            err *= 1e10
+
+        if(p[1] > 1 or (len(p) > 4 and p[4] > 1)):
+            err *= 1e10
+
+        # tau
+        if(p[2] < -12):
+            err += 1e10
+        # c
+        # if(p[3] < 0 or p[3] > 1):
+        #     err *= 1e10
+
+        # 2 CC terms and tau
+        if(len(p) > 4):
+            err *= 1e10
+
+        return err
+    
+    
     def __residuals(self, p, y, x):
         """
         Compute residuals of the measured data y and the response of the
